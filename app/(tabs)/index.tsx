@@ -2,7 +2,9 @@ import { icons } from "@/assets/constants/icons";
 import { images } from "@/assets/constants/images";
 import MovieCard from "@/components/MovieCard";
 import Searchbar from "@/components/Searchbar";
+import TrendingCard from "@/components/TrendingCard";
 import { fetchMovies } from "@/services/api";
+import { getTrendingMovies } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
 import {
@@ -16,6 +18,12 @@ import {
 
 export default function Index() {
   const router = useRouter();
+  const {
+    data: trendingMovies,
+    loading: trendingLoading,
+    error: trendingError,
+  } = useFetch(() => getTrendingMovies());
+
   const {
     data: movies,
     loading: moviesLoading,
@@ -31,19 +39,36 @@ export default function Index() {
       >
         <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
 
-        {moviesLoading ? (
+        {moviesLoading || trendingLoading ? (
           <ActivityIndicator
             size="large"
             color="#0000ff"
             className="mt-10 self-center"
           />
-        ) : moviesError ? (
-          <Text>Error: {moviesError.message}</Text>
+        ) : moviesError || trendingError ? (
+          <Text>Error: {moviesError?.message || trendingError?.message}</Text>
         ) : (
           <View className="flex-1 mt-5">
             <Searchbar
               onPress={() => router.push("/search")}
               placeholder="Search through 300+ movies online"
+            />
+            {trendingMovies && (
+              <View>
+                <Text className="my-4 text-lg text-accent">
+                  Trending Movies
+                </Text>
+              </View>
+            )}
+            <FlatList
+              data={trendingMovies}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              scrollEnabled={true}
+              renderItem={({ item, index }) => (
+                <TrendingCard movie={item} index={index}/>
+              )}
+              keyExtractor={(item) =>  item.$id}
             />
             <>
               <Text className="my-4 text-lg text-accent">Lastest Movies</Text>
@@ -58,9 +83,7 @@ export default function Index() {
                   marginBottom: 10,
                 }}
                 scrollEnabled={false}
-                renderItem={({ item }) => (
-                  <MovieCard {...item} />
-                )}
+                renderItem={({ item }) => <MovieCard {...item} />}
               />
             </>
           </View>

@@ -4,7 +4,7 @@ import { Image, StyleSheet, TextInput, View } from "react-native";
 interface Props {
   placeholder: string;
   onPress: () => void;
-  onChangeText: (text:string) => void;
+  onChangeText?: (text:string) => void;
   value?: string;
 }
 

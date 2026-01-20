@@ -3,6 +3,7 @@ import { images } from "@/assets/constants/images";
 import MovieCard from "@/components/MovieCard";
 import Searchbar from "@/components/Searchbar";
 import { fetchMovies } from "@/services/api";
+import { updateSearchCount } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
@@ -21,6 +22,9 @@ export default function Search() {
     const timeOutId = setTimeout(async () => {
       if (searchQuery.trim()) {
         await loadMovies();
+        if (data?.length > 0 && data?.[0]) {
+          await updateSearchCount(searchQuery, data?.[0]);
+        }
       } else {
         reset();
       }
@@ -36,7 +40,7 @@ export default function Search() {
         keyExtractor={(item) => item.id.toString()}
         numColumns={3}
         columnWrapperStyle={{
-          justifyContent: "center",
+          justifyContent: "flex-start",
           gap: 20,
           paddingRight: 5,
           marginBottom: 10,
@@ -78,7 +82,9 @@ export default function Search() {
                   <Text className=" text-xl text-white">
                     Search results for
                   </Text>
-                  <Text className="text-accent ml-1 text-xl font-bold">{searchQuery.toUpperCase()} </Text>
+                  <Text className="text-accent ml-1 text-xl font-bold">
+                    {searchQuery.toUpperCase()}{" "}
+                  </Text>
                 </View>
               )}
           </>
