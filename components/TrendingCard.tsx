@@ -24,7 +24,7 @@ const TrendingCard = ({
             resizeMode="cover"
           />
           <View className="flex-row items-center gap-1 px-1 bg-white/50 absolute rounded-md top-2 right-2 h-4">
-            <Image source={icons.star} className="size-2" />
+            <Image source={icons.star} className="size-2 w-2" />
             <Text className="text-white text-[8px]">
               {Math.round(vote_average * 10) / 10}
             </Text>
